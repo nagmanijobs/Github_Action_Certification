@@ -3,6 +3,11 @@ name: Build (Reusable)
 on:
   workflow_call:
     inputs:
+      servicename:
+        description: 'Service name to display'
+        required: false
+        default: 'Build Service'
+        type: string
       node-version:
         description: 'Node.js version to use'
         required: false
@@ -13,12 +18,25 @@ on:
         required: false
         default: true
         type: boolean
+    secrets:
+      token:
+        description: 'Secret token for authentication'
+        required: true
 
 jobs:
   build:
     name: Build and validate
     runs-on: ubuntu-latest
     steps:
+      - name: Print service name
+        run: |
+          echo "Service: ${{ inputs.servicename }}"
+
+      - name: Mask secret token
+        run: |
+          echo "::add-mask::${{ secrets.token }}"
+          echo "Secret is masked"
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
