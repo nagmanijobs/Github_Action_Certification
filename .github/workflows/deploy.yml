@@ -1,0 +1,100 @@
+name: Deploy Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      node-version:
+        description: 'Node version of artifact to deploy (18 or 20)'
+        required: true
+        default: '20'
+        type: choice
+        options:
+          - '18'
+          - '20'
+
+jobs:
+  deploy-qa:
+    name: Deploy to QA
+    runs-on: ubuntu-latest
+    environment: QA
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name-pattern: build-artifacts-node-${{ inputs.node-version }}-*
+          path: ./build-artifacts
+
+      - name: List artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          ls -la ./build-artifacts/
+
+      - name: Deploy QA
+        run: |
+          echo "Starting QA deployment..."
+          echo "Service: ${{ github.repository }}"
+          echo "Deploying commit: ${{ github.sha }}"
+          echo "Node version: ${{ inputs.node-version }}"
+          echo "Artifacts location: ./build-artifacts/"
+          echo "QA deployment completed"
+
+  deploy-beta:
+    name: Deploy to Beta
+    runs-on: ubuntu-latest
+    needs: deploy-qa
+    environment: Beta
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name-pattern: build-artifacts-node-${{ inputs.node-version }}-*
+          path: ./build-artifacts
+
+      - name: List artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          ls -la ./build-artifacts/
+
+      - name: Deploy Beta
+        run: |
+          echo "Starting Beta deployment..."
+          echo "Service: ${{ github.repository }}"
+          echo "Deploying commit: ${{ github.sha }}"
+          echo "Node version: ${{ inputs.node-version }}"
+          echo "Artifacts location: ./build-artifacts/"
+          echo "Beta deployment completed"
+
+  deploy-prod:
+    name: Deploy to Prod
+    runs-on: ubuntu-latest
+    needs: deploy-beta
+    environment: Prod
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name-pattern: build-artifacts-node-${{ inputs.node-version }}-*
+          path: ./build-artifacts
+
+      - name: List artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          ls -la ./build-artifacts/
+
+      - name: Deploy Prod
+        run: |
+          echo "Starting Prod deployment..."
+          echo "Service: ${{ github.repository }}"
+          echo "Deploying commit: ${{ github.sha }}"
+          echo "Node version: ${{ inputs.node-version }}"
+          echo "Artifacts location: ./build-artifacts/"
+          echo "Prod deployment completed"
