@@ -21,10 +21,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Get short SHA
+        id: short-sha
+        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name-pattern: build-artifacts-node-${{ inputs.node-version }}-*
+          name-pattern: build-artifacts-*-${{ steps.short-sha.outputs.sha }}-*
           path: ./build-artifacts
 
       - name: List artifacts
@@ -50,10 +54,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Get short SHA
+        id: short-sha
+        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name-pattern: build-artifacts-node-${{ inputs.node-version }}-*
+          name-pattern: build-artifacts-*-${{ steps.short-sha.outputs.sha }}-*
           path: ./build-artifacts
 
       - name: List artifacts
@@ -79,10 +87,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Get short SHA
+        id: short-sha
+        run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name-pattern: build-artifacts-node-${{ inputs.node-version }}-*
+          name-pattern: build-artifacts-*-${{ steps.short-sha.outputs.sha }}-*
           path: ./build-artifacts
 
       - name: List artifacts
