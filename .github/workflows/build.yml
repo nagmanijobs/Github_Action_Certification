@@ -60,3 +60,17 @@ jobs:
         run: npm test
         env:
           CI: true
+
+      - name: Generate date for artifact
+        id: date
+        run: echo "date=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-node-${{ inputs.node-version }}-${{ steps.date.outputs.date }}
+          path: |
+            hello-world/
+            package.json
+            package-lock.json
+          retention-days: 7
