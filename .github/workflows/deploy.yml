@@ -34,26 +34,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const sha = context.sha;
-
-            const runs = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
-              owner,
-              repo,
-              head_sha: sha,
-              status: 'completed',
-              per_page: 100
-            });
-
-            const ciRun = runs.find((run) => run.name === 'CI - run tests' && run.conclusion === 'success');
-
-            if (!ciRun) {
-              core.setFailed(`No successful CI - run tests workflow found for commit ${sha}`);
-              return;
-            }
-
-            core.setOutput('run_id', String(ciRun.id));
+            const script = require('./.github/scripts/resolve-ci-run.js');
+            await script({github, context, core});
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -97,26 +79,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const sha = context.sha;
-
-            const runs = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
-              owner,
-              repo,
-              head_sha: sha,
-              status: 'completed',
-              per_page: 100
-            });
-
-            const ciRun = runs.find((run) => run.name === 'CI - run tests' && run.conclusion === 'success');
-
-            if (!ciRun) {
-              core.setFailed(`No successful CI - run tests workflow found for commit ${sha}`);
-              return;
-            }
-
-            core.setOutput('run_id', String(ciRun.id));
+            const script = require('./.github/scripts/resolve-ci-run.js');
+            await script({github, context, core});
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -160,26 +124,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const sha = context.sha;
-
-            const runs = await github.paginate(github.rest.actions.listWorkflowRunsForRepo, {
-              owner,
-              repo,
-              head_sha: sha,
-              status: 'completed',
-              per_page: 100
-            });
-
-            const ciRun = runs.find((run) => run.name === 'CI - run tests' && run.conclusion === 'success');
-
-            if (!ciRun) {
-              core.setFailed(`No successful CI - run tests workflow found for commit ${sha}`);
-              return;
-            }
-
-            core.setOutput('run_id', String(ciRun.id));
+            const script = require('./.github/scripts/resolve-ci-run.js');
+            await script({github, context, core});
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
