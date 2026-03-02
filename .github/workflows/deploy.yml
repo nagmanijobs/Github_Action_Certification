@@ -11,6 +11,12 @@ on:
         options:
           - '18'
           - '20'
+  workflow_run:
+    workflows: ["CI - run tests"]
+    types:
+      - completed
+    branches:
+      - main
 
 permissions:
   actions: read
@@ -21,9 +27,20 @@ jobs:
     name: Deploy to QA
     runs-on: ubuntu-latest
     environment: QA
+    # Only run on workflow_dispatch or if the triggering CI test workflow succeeded
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set node version
+        id: node-version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ inputs.node-version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=20" >> $GITHUB_OUTPUT
+          fi
 
       - name: Get short SHA
         id: short-sha
@@ -43,7 +60,7 @@ jobs:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           run-id: ${{ steps.ci-run.outputs.run_id }}
-          name-pattern: build-artifacts-node-${{ inputs.node-version }}-${{ steps.short-sha.outputs.sha }}-*
+          name-pattern: build-artifacts-node-${{ steps.node-version.outputs.version }}-${{ steps.short-sha.outputs.sha }}-*
           path: ./build-artifacts
           merge-multiple: false
 
@@ -57,7 +74,7 @@ jobs:
           echo "Starting QA deployment..."
           echo "Service: ${{ github.repository }}"
           echo "Deploying commit: ${{ github.sha }}"
-          echo "Node version: ${{ inputs.node-version }}"
+          echo "Node version: ${{ steps.node-version.outputs.version }}"
           echo "Artifacts location: ./build-artifacts/"
           echo "QA deployment completed"
 
@@ -66,9 +83,19 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-qa
     environment: Beta
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set node version
+        id: node-version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ inputs.node-version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=20" >> $GITHUB_OUTPUT
+          fi
 
       - name: Get short SHA
         id: short-sha
@@ -88,7 +115,7 @@ jobs:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           run-id: ${{ steps.ci-run.outputs.run_id }}
-          name-pattern: build-artifacts-node-${{ inputs.node-version }}-${{ steps.short-sha.outputs.sha }}-*
+          name-pattern: build-artifacts-node-${{ steps.node-version.outputs.version }}-${{ steps.short-sha.outputs.sha }}-*
           path: ./build-artifacts
           merge-multiple: false
 
@@ -102,7 +129,7 @@ jobs:
           echo "Starting Beta deployment..."
           echo "Service: ${{ github.repository }}"
           echo "Deploying commit: ${{ github.sha }}"
-          echo "Node version: ${{ inputs.node-version }}"
+          echo "Node version: ${{ steps.node-version.outputs.version }}"
           echo "Artifacts location: ./build-artifacts/"
           echo "Beta deployment completed"
 
@@ -111,9 +138,19 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-beta
     environment: Prod
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set node version
+        id: node-version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ inputs.node-version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=20" >> $GITHUB_OUTPUT
+          fi
 
       - name: Get short SHA
         id: short-sha
@@ -133,7 +170,7 @@ jobs:
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
           run-id: ${{ steps.ci-run.outputs.run_id }}
-          name-pattern: build-artifacts-node-${{ inputs.node-version }}-${{ steps.short-sha.outputs.sha }}-*
+          name-pattern: build-artifacts-node-${{ steps.node-version.outputs.version }}-${{ steps.short-sha.outputs.sha }}-*
           path: ./build-artifacts
           merge-multiple: false
 
@@ -147,6 +184,6 @@ jobs:
           echo "Starting Prod deployment..."
           echo "Service: ${{ github.repository }}"
           echo "Deploying commit: ${{ github.sha }}"
-          echo "Node version: ${{ inputs.node-version }}"
+          echo "Node version: ${{ steps.node-version.outputs.version }}"
           echo "Artifacts location: ./build-artifacts/"
           echo "Prod deployment completed"
