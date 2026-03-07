@@ -1,0 +1,6 @@
+# Default owner for all files
+* @nagmanijobs
+
+# Workflow and deployment ownership
+.github/workflows/* @nagmanijobs
+.github/scripts/* @nagmanijobs
