@@ -4,3 +4,6 @@
 # Workflow and deployment ownership
 .github/workflows/* @nagmanijobs
 .github/scripts/* @nagmanijobs
+
+# Hello world app ownership
+hello-world/* @nagmanijobs
