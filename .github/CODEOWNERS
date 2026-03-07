@@ -1,0 +1,9 @@
+# Default owner for all files
+* @nagmanijobs nagmani16@gmail.com
+
+# Workflow and deployment ownership
+.github/workflows/* @nagmanijobs nagmani16@gmail.com
+.github/scripts/* @nagmanijobs nagmani16@gmail.com
+
+# Hello world app ownership
+hello-world/* @nagmanijobs nagmani16@gmail.com
